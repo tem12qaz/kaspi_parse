@@ -102,7 +102,7 @@ async def parse_kaspi(url):
                 proxy=proxies['http']
             )
             data = (await resp.read()).decode('utf-8')
-            # print(data)
+            print(data)
 
         offers = json.loads(data)['data']
         offers_output = []
