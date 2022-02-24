@@ -95,7 +95,7 @@ async def parse_kaspi(url):
     try:
         async with aiohttp.ClientSession() as session:
             resp = await session.get(
-                url=f'{url}/offers/',
+                url=f'{url.split("/?", "")[0]}/offers/',
                 headers=header_format(url),
                 params=params,
                 proxy=proxies['http']
@@ -154,10 +154,10 @@ async def parse(product: Product, commission, table_dict, db):
         product.supplier1_price = table_dict[product.supplier1_code][0]
         product.supplier1_name = table_dict[product.supplier1_code][3]
 
-    db.session.commit()
-    calculate_margin(product, commission)
-    db.session.commit()
-    print(product)
+        db.session.commit()
+        calculate_margin(product, commission)
+        db.session.commit()
+        print(product)
 
 
 async def parse_cycle(loop, db):
