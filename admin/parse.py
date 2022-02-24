@@ -125,7 +125,7 @@ def parse_table():
         headers={'User-Agent': fa.random}
     ).content
 
-    with open('inc_trendo.xlsx', 'rb') as f:
+    with open('inc_trendo.xlsx', 'wb') as f:
         f.write(file_source)
 
     df = pd.read_excel('inc_trendo.xlsx')
