@@ -27,7 +27,7 @@ class Product(db.Model):
     region = db.Column(db.String(128), nullable=True)
     name = db.Column(db.String(512), nullable=True)
     kaspi_price = db.Column(db.Integer(), nullable=True)
-    kaspi_url = db.Column(db.Integer())
+    kaspi_url = db.Column(db.String(512))
     supplier1_code = db.Column(db.String(128))
     supplier1_name = db.Column(db.String(128), nullable=True)
     supplier1_price = db.Column(db.Integer(), nullable=True)
