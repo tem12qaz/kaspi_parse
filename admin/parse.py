@@ -140,8 +140,8 @@ def parse_table():
 
 
 def calculate_margin(product: Product, commission):
-    product.supplier1_margin = int(product.kaspi_price - (product.kaspi_price * (commission.commission / 100))
-                                   - product.supplier1_price - commission.delivery_price)
+    b = product.supplier1_price - commission.delivery_price
+    product.supplier1_margin = int(product.kaspi_price - (product.kaspi_price * (commission.commission / 100)) - b)
 
     product.supplier1_margin_percent = round(product.supplier1_margin / product.supplier1_price, 2)
 
