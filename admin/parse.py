@@ -154,6 +154,7 @@ async def parse(product: Product, commission, table_dict):
         product.supplier1_price = table_dict[product.supplier1_code][0]
         product.supplier1_name = table_dict[product.supplier1_code][3]
 
+    db.session.commit()
     calculate_margin(product, commission)
     db.session.commit()
     print(product)
