@@ -9,6 +9,7 @@ from fake_useragent import UserAgent
 import aiohttp as aiohttp
 import pandas as pd
 
+from config import delivery_duration
 from models import Product, Commission
 
 fa = UserAgent()
@@ -55,13 +56,13 @@ def compare_delivery_duration(delivery_date):
     month = month_order[month]
     now = datetime.today()
     if now.month == month:
-        if now.day - int(day) == 14:
+        if now.day - int(day) == delivery_duration:
             return True
         else:
             return False
     else:
         duration = month_days[now.month] - now.day + day
-        if duration == 14:
+        if duration == delivery_duration:
             return True
         else:
             return False

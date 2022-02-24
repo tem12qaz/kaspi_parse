@@ -3,6 +3,7 @@ PG_HOST = 'localhost'
 PG_PASSWORD = 'pass'
 PG_USER = 'myuser'
 PG_DATABASE = 'db'
+delivery_duration = 6
 
 
 
