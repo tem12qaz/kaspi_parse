@@ -95,6 +95,7 @@ async def parse_kaspi(url):
     try:
         async with aiohttp.ClientSession() as session:
             url = url.split("/?")[0]
+            print(url)
             resp = await session.get(
                 url=f'{url}/offers/',
                 headers=header_format(url),
