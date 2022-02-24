@@ -146,7 +146,7 @@ def calculate_margin(product: Product, commission):
     product.supplier1_margin_percent = round(product.supplier1_margin / product.supplier1_price, 2)
 
 
-async def parse(product: Product, commission, table_dict):
+async def parse(product: Product, commission, table_dict, db):
     price = await parse_kaspi(product.kaspi_url)
     if not price:
         product.kaspi_price = 0
@@ -166,7 +166,7 @@ async def parse_cycle(loop, db):
         commission = Commission.query.all()[0]
         products = Product.query.all()
         for product in products:
-            loop.create_task(parse(product, commission, table_dict))
+            loop.create_task(parse(product, commission, table_dict, db))
 
         while [task for task in asyncio.all_tasks(loop) if not task.done()]:
             await asyncio.sleep(5)
