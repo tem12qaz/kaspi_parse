@@ -155,6 +155,7 @@ async def parse(product: Product, commission, table_dict):
 
     calculate_margin(product, commission)
     db.session.commit()
+    print(product)
 
 
 async def parse_cycle(loop, db):

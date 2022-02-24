@@ -34,6 +34,15 @@ class Product(db.Model):
     supplier1_margin = db.Column(db.Integer(), nullable=True)
     supplier1_margin_percent = db.Column(db.Float(), nullable=True)
 
+    def __repr__(self):
+        return f'''
+kp = {self.kaspi_price}
+s_name = {self.supplier1_name}
+s_price = {self.supplier1_price}
+s_margin = {self.supplier1_margin}
+s_margin_percent = {self.supplier1_margin_percent}
+'''
+
 
 class Commission(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
