@@ -9,7 +9,7 @@ from fake_useragent import UserAgent
 import aiohttp as aiohttp
 import pandas as pd
 
-from admin.models import Product, Commission
+from models import Product, Commission
 
 fa = UserAgent()
 
