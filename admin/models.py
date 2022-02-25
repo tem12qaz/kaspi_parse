@@ -30,8 +30,8 @@ class Product(db.Model):
     kaspi_url = db.Column(db.String(512))
     supplier1_code = db.Column(db.String(128))
     supplier1_name = db.Column(db.String(128), nullable=True)
-    supplier1_price = db.Column(db.Integer(), nullable=True)
-    supplier1_margin = db.Column(db.Integer(), nullable=True)
+    supplier1_price = db.Column(db.Float(), nullable=True)
+    supplier1_margin = db.Column(db.Float(), nullable=True)
     supplier1_margin_percent = db.Column(db.Float(), nullable=True)
 
     def __repr__(self):
