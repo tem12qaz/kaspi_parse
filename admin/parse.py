@@ -175,6 +175,7 @@ async def parse(product: Product, commission, table_dict, db):
     if not price:
         product.kaspi_price = 0
     else:
+        product.kaspi_price = price
         product.supplier1_price = table_dict[product.supplier1_code][0]
         product.supplier1_name = table_dict[product.supplier1_code][3]
 
