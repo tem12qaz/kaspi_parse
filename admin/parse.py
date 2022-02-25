@@ -103,15 +103,18 @@ async def parse_kaspi(url):
                 proxy=proxies['http']
             )
             data = (await resp.read()).decode('utf-8')
-            print(data)
+            # print(data)
 
         offers = json.loads(data)['data']
         offers_output = []
         for offer in offers:
             price = int(offer['priceFormatted'].replace('₸', '').replace(' ', ''))
-            delivery_price = int(offer['deliveryOptions']['price'].replace('₸', '').replace(' ', ''))
-            if compare_delivery_duration(offer['deliveryOptions']['date']):
-                offers_output.append(price + delivery_price)
+            for delivery in offer['deliveryOptions']:
+                if delivery['type'] == 'DELIVERY':
+                    delivery_price = int(delivery['price'].replace('₸', '').replace(' ', ''))
+                    if compare_delivery_duration(delivery['date']):
+                        offers_output.append(price + delivery_price)
+                        break
 
         if offers_output:
             return min(offers_output)
