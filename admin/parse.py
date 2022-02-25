@@ -111,7 +111,11 @@ async def parse_kaspi(url):
             price = int(offer['priceFormatted'].replace('₸', '').replace(' ', ''))
             for delivery in offer['deliveryOptions']:
                 if delivery['type'] == 'DELIVERY':
-                    delivery_price = int(delivery['price'].replace('₸', '').replace(' ', ''))
+                    delivery_price = delivery['price'].replace('₸', '').replace(' ', '')
+                    if delivery_price == 'бе��платно' or delivery_price == 'бесплатно':
+                        delivery_price = 0
+                    else:
+                        delivery_price = int(delivery_price)
                     if compare_delivery_duration(delivery['date']):
                         offers_output.append(price + delivery_price)
                         break
