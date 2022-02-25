@@ -22,7 +22,7 @@ class HomeAdminView(AdminMixin, AdminIndexView):
 
 class ProductView(AdminMixin, ModelView):
     # column_list = ('id', 'region', 'name', 'kaspi_price', 'kaspi_url', 'supplier1_code', 'supplier1_price', 'supplier1_margin')
-    column_list = ('id', 'kaspi_price', 'kaspi_url', 'supplier1_code', 'supplier1_price', 'supplier1_margin')
+    column_list = ('id', 'kaspi_price', 'kaspi_url', 'supplier1_name', 'supplier1_code', 'supplier1_price', 'supplier1_margin', 'supplier1_margin_percent')
 
     form_columns = ('kaspi_url', 'supplier1_code')
 
