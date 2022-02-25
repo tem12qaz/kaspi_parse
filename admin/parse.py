@@ -76,7 +76,7 @@ def compare_delivery_duration(delivery_date):
         else:
             return False
     else:
-        duration = month_days[now.month] - now.day + day
+        duration = month_days[now.month] - now.day + int(day)
         if duration == delivery_duration:
             return True
         else:
