@@ -39,6 +39,9 @@ urls = [
 #     "http": "http://jQN3TQ:4szonK@186.65.114.22:9173/",
 #     "https": "http://jQN3TQ:4szonK@186.65.114.22:9173/",
 # }
+# proxies = {
+#     "http": "http://rYtq9n:hjdPab@46.232.5.3:8000/",
+# }
 
 proxies = {
     "http": "http://7AQuMf:oP6uwq@193.124.178.42:8000/",
