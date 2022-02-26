@@ -71,13 +71,13 @@ def compare_delivery_duration(delivery_date, commission):
     month = month_order[month]
     now = datetime.today()
     if now.month == month:
-        if commission.max_delivery_duration <= now.day - int(day) <= commission.max_delivery_duration:
+        if commission.min_delivery_duration <= now.day - int(day) <= commission.max_delivery_duration:
             return True
         else:
             return False
     else:
         duration = month_days[now.month] - now.day + int(day)
-        if commission.max_delivery_duration <= duration <= commission.max_delivery_duration:
+        if commission.min_delivery_duration <= duration <= commission.max_delivery_duration:
             return True
         else:
             return False
