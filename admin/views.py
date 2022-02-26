@@ -22,13 +22,13 @@ class HomeAdminView(AdminMixin, AdminIndexView):
 
 class ProductView(AdminMixin, ModelView):
     # column_list = ('id', 'region', 'name', 'kaspi_price', 'kaspi_url', 'supplier1_code', 'supplier1_price', 'supplier1_margin')
-    column_list = ('id', 'kaspi_price', 'kaspi_url', 'supplier1_name', 'supplier1_code', 'supplier1_price', 'supplier1_margin', 'supplier1_margin_percent')
+    column_list = ('id', 'min_delivery_duration', 'max_delivery_duration', 'kaspi_price', 'kaspi_url', 'supplier1_name', 'supplier1_code', 'supplier1_price', 'supplier1_margin', 'supplier1_margin_percent')
 
-    form_columns = ('kaspi_url', 'supplier1_code')
+    form_columns = ('kaspi_url', 'supplier1_code', 'min_delivery_duration', 'max_delivery_duration')
 
 
 class CommView(AdminMixin, ModelView):
-    column_list = ('id', 'commission', 'delivery_price', 'min_delivery_duration', 'max_delivery_duration')
+    column_list = ('id', 'commission', 'delivery_price')
 
     form_columns = tuple()
 

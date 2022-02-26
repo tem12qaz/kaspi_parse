@@ -64,20 +64,20 @@ month_days = {
 }
 
 
-def compare_delivery_duration(delivery_date, commission):
+def compare_delivery_duration(delivery_date, product):
     if 'сегодня' in delivery_date or 'завтра' in delivery_date:
         return False
     day, month = delivery_date.split(' ')
     month = month_order[month]
     now = datetime.today()
     if now.month == month:
-        if commission.min_delivery_duration <= now.day - int(day) <= commission.max_delivery_duration:
+        if product.min_delivery_duration <= now.day - int(day) <= product.max_delivery_duration:
             return True
         else:
             return False
     else:
         duration = month_days[now.month] - now.day + int(day)
-        if commission.min_delivery_duration <= duration <= commission.max_delivery_duration:
+        if product.min_delivery_duration <= duration <= product.max_delivery_duration:
             return True
         else:
             return False
@@ -100,7 +100,7 @@ def header_format(url_):
     return headers
 
 
-async def parse_kaspi(url, commission):
+async def parse_kaspi(url, product):
     params = (
         ('c', '750000000'),
         ('limit', '100'),
@@ -132,7 +132,7 @@ async def parse_kaspi(url, commission):
                     # else:
                     #     delivery_price = int(delivery_price)
 
-                    if compare_delivery_duration(delivery['date'], commission):
+                    if compare_delivery_duration(delivery['date'], product):
                         offers_output.append(price)
                         break
 
@@ -172,7 +172,7 @@ def calculate_margin(product: Product, commission):
 
 
 async def parse(product: Product, commission, table_dict, db):
-    price = await parse_kaspi(product.kaspi_url, commission)
+    price = await parse_kaspi(product.kaspi_url, product)
     if not price:
         product.kaspi_price = 0
     else:

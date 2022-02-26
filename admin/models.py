@@ -33,6 +33,8 @@ class Product(db.Model):
     supplier1_price = db.Column(db.Float(), nullable=True)
     supplier1_margin = db.Column(db.Float(), nullable=True)
     supplier1_margin_percent = db.Column(db.Float(), nullable=True)
+    min_delivery_duration = db.Column(db.Integer(), default=7)
+    max_delivery_duration = db.Column(db.Integer(), default=14)
 
     def __repr__(self):
         return f'''
@@ -48,7 +50,5 @@ class Commission(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     commission = db.Column(db.Integer())
     delivery_price = db.Column(db.Integer())
-    min_delivery_duration = db.Column(db.Integer())
-    max_delivery_duration = db.Column(db.Integer())
 
 
