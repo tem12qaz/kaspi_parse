@@ -168,7 +168,7 @@ def calculate_margin(product: Product, commission):
     b = product.supplier1_price + commission.delivery_price
     product.supplier1_margin = round(product.kaspi_price - (product.kaspi_price * (commission.commission / 100)) - b, 2)
 
-    product.supplier1_margin_percent = round(product.supplier1_margin / product.supplier1_price, 2)
+    product.supplier1_margin_percent = round(product.supplier1_margin / product.kaspi_price, 4) * 100
 
 
 async def parse(product: Product, commission, table_dict, db):
