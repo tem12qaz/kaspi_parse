@@ -28,7 +28,7 @@ class ProductView(AdminMixin, ModelView):
 
 
 class CommView(AdminMixin, ModelView):
-    column_list = ('id', 'commission', 'delivery_price')
+    column_list = ('id', 'commission', 'delivery_price', 'min_delivery_duration', 'max_delivery_duration')
 
     form_columns = tuple()
 

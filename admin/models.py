@@ -48,5 +48,7 @@ class Commission(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     commission = db.Column(db.Integer())
     delivery_price = db.Column(db.Integer())
+    min_delivery_duration = db.Column(db.Integer())
+    max_delivery_duration = db.Column(db.Integer())
 
 

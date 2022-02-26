@@ -64,20 +64,20 @@ month_days = {
 }
 
 
-def compare_delivery_duration(delivery_date):
+def compare_delivery_duration(delivery_date, commission):
     if 'сегодня' in delivery_date or 'завтра' in delivery_date:
         return False
     day, month = delivery_date.split(' ')
     month = month_order[month]
     now = datetime.today()
     if now.month == month:
-        if now.day - int(day) == delivery_duration:
+        if commission.max_delivery_duration <= now.day - int(day) <= commission.max_delivery_duration:
             return True
         else:
             return False
     else:
         duration = month_days[now.month] - now.day + int(day)
-        if duration == delivery_duration:
+        if commission.max_delivery_duration <= duration <= commission.max_delivery_duration:
             return True
         else:
             return False
@@ -100,7 +100,7 @@ def header_format(url_):
     return headers
 
 
-async def parse_kaspi(url):
+async def parse_kaspi(url, commission):
     params = (
         ('c', '750000000'),
         ('limit', '100'),
@@ -132,7 +132,7 @@ async def parse_kaspi(url):
                     # else:
                     #     delivery_price = int(delivery_price)
 
-                    if compare_delivery_duration(delivery['date']):
+                    if compare_delivery_duration(delivery['date'], commission):
                         offers_output.append(price)
                         break
 
@@ -165,14 +165,14 @@ def parse_table():
 
 
 def calculate_margin(product: Product, commission):
-    b = product.supplier1_price - commission.delivery_price
-    product.supplier1_margin = int(product.kaspi_price - (product.kaspi_price * (commission.commission / 100)) - b)
+    b = product.supplier1_price + commission.delivery_price
+    product.supplier1_margin = round(product.kaspi_price - (product.kaspi_price * (commission.commission / 100)) - b, 2)
 
     product.supplier1_margin_percent = round(product.supplier1_margin / product.supplier1_price, 2)
 
 
 async def parse(product: Product, commission, table_dict, db):
-    price = await parse_kaspi(product.kaspi_url)
+    price = await parse_kaspi(product.kaspi_url, commission)
     if not price:
         product.kaspi_price = 0
     else:
