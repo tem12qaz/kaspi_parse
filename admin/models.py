@@ -1,3 +1,5 @@
+import enum
+
 from flask_security import UserMixin, RoleMixin
 
 from flask_app_init import db
@@ -6,6 +8,12 @@ roles_users = db.Table('roles_users',
                        db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
                        db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
                        )
+
+
+class DeliveryEnum(enum.Enum):
+    one = '1 - 3'
+    two = '4 - 6'
+    three = '7 - 15'
 
 
 class User(db.Model, UserMixin):
@@ -33,8 +41,7 @@ class Product(db.Model):
     supplier1_price = db.Column(db.Float(), nullable=True)
     supplier1_margin = db.Column(db.Float(), nullable=True)
     supplier1_margin_percent = db.Column(db.Float(), nullable=True)
-    min_delivery_duration = db.Column(db.Integer(), default=7)
-    max_delivery_duration = db.Column(db.Integer(), default=14)
+    delivery_duration = db.Column(db.Enum(DeliveryEnum))
 
     def __repr__(self):
         return f'''
