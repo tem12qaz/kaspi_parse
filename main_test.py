@@ -7,11 +7,9 @@ from fake_useragent import UserAgent
 import aiohttp as aiohttp
 import requests
 
+from admin.config import cookies
+
 fa = UserAgent()
-
-
-
-
 
 urls = [
     'https://kaspi.kz/shop/p/xiaomi-mi-band-6-global-version-chernyi-101380052/',
@@ -44,7 +42,7 @@ urls = [
 # }
 
 proxies = {
-    "http": "http://7AQuMf:oP6uwq@193.124.178.42:8000/",
+    "http": "http://50u3vE:M4QaXL@188.119.79.182:8000/"
 }
 
 rating = 0
@@ -64,6 +62,19 @@ def header_format(url_):
         'Referer': f'{url_}/?c=750000000&ref=rec-goods&PageSpeed=noscript',
         'Accept-Language': 'ru-RU,ru;q=0.9,en;q=0.8,es;q=0.7',
     }
+    headers = {
+        'Connection': 'keep-alive',
+        'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="98", "Google Chrome";v="98"',
+        'Accept': 'application/vnd.api+json',
+        'sec-ch-ua-mobile': '?0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36',
+        'sec-ch-ua-platform': '"Windows"',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Dest': 'empty',
+        'Referer': 'https://kaspi.kz/shop/p/polaris-puh-7045-tfd-belyi-4300457/?ref=shared_link&c=750000000&at=1',
+        'Accept-Language': 'ru-RU,ru;q=0.9,en;q=0.8,es;q=0.7',
+    }
     return headers
 
 
@@ -76,7 +87,7 @@ async def parse(url_):
         ('sort', 'asc'),
     )
     try:
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(cookies=cookies) as session:
             resp = await session.get(
                 url=f'{url_}/offers/',
                 headers=header_format(url_),
@@ -84,7 +95,7 @@ async def parse(url_):
                 proxy=proxies['http']
             )
             data = (await resp.read()).decode('utf-8')
-            # print(data)
+            print(data)
 
         offers = json.loads(data)['data']
         print(offers[0])
