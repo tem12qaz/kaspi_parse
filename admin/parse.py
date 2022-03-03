@@ -11,6 +11,7 @@ import pandas as pd
 
 from config import delivery_duration, cookies
 from models import Product, Commission
+from test import parse_new
 
 fa = UserAgent()
 
@@ -109,13 +110,14 @@ async def parse_kaspi(url, product):
         ('page', '0'),
     )
     try:
-        url = url.split("/?")[0]
-        print(url)
-        response = requests.get(
-            f'{url}/offers/', headers=header_format(url), params=params, cookies=cookies, proxies=proxies
-        )
-        data = response.content.decode('utf-8')
-        print(data)
+        data = parse_new(url)
+        # url = url.split("/?")[0]
+        # print(url)
+        # response = requests.get(
+        #     f'{url}/offers/', headers=header_format(url), params=params, cookies=cookies, proxies=proxies
+        # )
+        # data = response.content.decode('utf-8')
+        # print(data)
 
         # async with aiohttp.ClientSession() as session:
         #     resp = await session.get(
