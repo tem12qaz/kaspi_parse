@@ -103,24 +103,28 @@ def header_format(url_):
 
 
 async def parse_kaspi(url, product):
-    id_ = product.kaspi_url.split('/?')[0].split('-')[-1]
     params = (
         ('c', '750000000'),
-        ('id', id_),
         ('limit', '100'),
         ('page', '0'),
+        ('sort', 'asc'),
     )
     try:
-        async with aiohttp.ClientSession(cookies=cookies) as session:
-            url = url.split("/?")[0]
-            print(url)
-            resp = await session.get(
-                url=f'{url}/offers/',
-                headers=header_format(url),
-                params=params,
-                proxy=proxies['http'],
-            )
-            data = (await resp.read()).decode('utf-8')
+        url = url.split("/?")[0]
+        print(url)
+        response = requests.get(
+            f'{url}/offers/', headers=header_format(url), params=params, cookies=cookies, proxies=proxies
+        )
+        data = response.content.decode('utf-8')
+
+        # async with aiohttp.ClientSession() as session:
+        #     resp = await session.get(
+        #         url=f'{url}/offers/',
+        #         headers=header_format(url),
+        #         params=params,
+        #         proxy=proxies['http']
+        #     )
+        #     data = (await resp.read()).decode('utf-8')
             # print(data)
 
         offers = json.loads(data)['data']
