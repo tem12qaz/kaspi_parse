@@ -70,7 +70,8 @@ def compare_delivery_duration(delivery_date, product):
     day, month = delivery_date.split(' ')
     month = month_order[month]
     now = datetime.today()
-    min_delivery_duration, max_delivery_duration = product.delivery_duration.split(' - ')
+    min_delivery_duration = product.commission.delivery_duration_from
+    max_delivery_duration = product.commission.delivery_duration_to
     if now.month == month:
         if min_delivery_duration <= now.day - int(day) <= max_delivery_duration:
             return True
@@ -190,9 +191,9 @@ async def parse(product: Product, commission, table_dict, db):
 async def parse_cycle(loop, db):
     while True:
         table_dict = parse_table()
-        commission = Commission.query.all()[0]
         products = Product.query.all()
         for product in products:
+            commission = product.commission
             loop.create_task(parse(product, commission, table_dict, db))
 
         while [task for task in asyncio.all_tasks(loop) if not task.done()]:
