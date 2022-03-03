@@ -91,7 +91,7 @@ def header_format(url_):
         'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="98", "Google Chrome";v="98"',
         'Accept': 'application/vnd.api+json',
         'sec-ch-ua-mobile': '?0',
-        'User-Agent': fa.random,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36',
         'sec-ch-ua-platform': '"Windows"',
         'Sec-Fetch-Site': 'same-origin',
         'Sec-Fetch-Mode': 'cors',
