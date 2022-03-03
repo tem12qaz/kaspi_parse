@@ -10,12 +10,6 @@ roles_users = db.Table('roles_users',
                        )
 
 
-class DeliveryEnum(enum.Enum):
-    one = '1 - 3'
-    two = '4 - 6'
-    three = '7 - 15'
-
-
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key=True)
     email = db.Column(db.String(100), unique=True)
@@ -41,7 +35,7 @@ class Product(db.Model):
     supplier1_price = db.Column(db.Float(), nullable=True)
     supplier1_margin = db.Column(db.Float(), nullable=True)
     supplier1_margin_percent = db.Column(db.Float(), nullable=True)
-    delivery_duration = db.Column(db.Enum(DeliveryEnum))
+    commission_id = db.Column(db.Integer, db.ForeignKey('commission.id'), nullable=False)
 
     def __repr__(self):
         return f'''
@@ -57,5 +51,6 @@ class Commission(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     commission = db.Column(db.Integer())
     delivery_price = db.Column(db.Integer())
-
-
+    delivery_duration_from = db.Column(db.Integer())
+    delivery_duration_to = db.Column(db.Integer())
+    products = db.relationship('Product', backref='commission', lazy=True)
