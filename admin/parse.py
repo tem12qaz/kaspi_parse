@@ -107,7 +107,6 @@ async def parse_kaspi(url, product):
         ('c', '750000000'),
         ('limit', '100'),
         ('page', '0'),
-        ('sort', 'asc'),
     )
     try:
         url = url.split("/?")[0]
@@ -116,6 +115,7 @@ async def parse_kaspi(url, product):
             f'{url}/offers/', headers=header_format(url), params=params, cookies=cookies, proxies=proxies
         )
         data = response.content.decode('utf-8')
+        print(data)
 
         # async with aiohttp.ClientSession() as session:
         #     resp = await session.get(
