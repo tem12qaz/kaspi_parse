@@ -15,7 +15,7 @@ from models import Product, Commission
 fa = UserAgent()
 
 proxies = {
-    "http": "http://7AQuMf:oP6uwq@193.124.178.42:8000/",
+    "http": "http://50u3vE:M4QaXL@188.119.79.182:8000/"
 }
 
 month_order = {
