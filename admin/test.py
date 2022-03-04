@@ -57,12 +57,13 @@ params = (
 )
 
 proxies = {
-    "http": "http://50u3vE:M4QaXL@188.119.79.182:8000/"
+    "http": "http://50u3vE:M4QaXL@188.119.79.182:8000/",
+    "https": "http://50u3vE:M4QaXL@188.119.79.182:8000/"
 }
 
-proxies = {
-    "http": "http://rYtq9n:hjdPab@46.232.5.3:8000/",
-}
+# proxies = {
+#     "http": "http://rYtq9n:hjdPab@46.232.5.3:8000/",
+# }
 
 
 url = 'https://kaspi.kz/shop/p/polaris-puh-7045-tfd-belyi-4300457/?c=351010000'
@@ -96,4 +97,12 @@ def parse_new(url_):
     return data
 
 
-print(parse_new(url))
+def test():
+    response = requests.get(
+        'https://ipaddress.my/', proxies=proxies
+    )
+    print(response.content.decode('utf-8'))
+
+
+# print(parse_new(url))
+# test()
