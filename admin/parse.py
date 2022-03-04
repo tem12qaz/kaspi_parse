@@ -78,11 +78,12 @@ def compare_delivery_duration(delivery_date, product):
     day, month = delivery_date.split(' ')
     month = month_order[month]
     now = datetime.today()
+    duration = now.day - int(day)
 
+    print(duration)
     print(max_delivery_duration)
     if now.month == month:
-        print('----')
-        if min_delivery_duration <= now.day - int(day) <= max_delivery_duration:
+        if min_delivery_duration <= duration <= max_delivery_duration:
             return True
         else:
             return False
