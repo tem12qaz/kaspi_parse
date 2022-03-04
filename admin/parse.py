@@ -73,6 +73,7 @@ def compare_delivery_duration(delivery_date, product):
     now = datetime.today()
     min_delivery_duration = product.commission.delivery_duration_from
     max_delivery_duration = product.commission.delivery_duration_to
+    print(max_delivery_duration)
     if now.month == month:
         if min_delivery_duration <= now.day - int(day) <= max_delivery_duration:
             return True
