@@ -105,4 +105,4 @@ def test():
 
 
 # print(parse_new(url))
-# test()
+test()
