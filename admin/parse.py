@@ -71,7 +71,7 @@ def compare_delivery_duration(delivery_date, product):
     if 'сегодня' in delivery_date:
         return False
     elif 'завтра' in delivery_date:
-        if min_delivery_duration <= 2:
+        if min_delivery_duration <= 1:
             return True
         else:
             return False
@@ -81,6 +81,7 @@ def compare_delivery_duration(delivery_date, product):
 
     print(max_delivery_duration)
     if now.month == month:
+        print('----')
         if min_delivery_duration <= now.day - int(day) <= max_delivery_duration:
             return True
         else:
