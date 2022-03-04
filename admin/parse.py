@@ -66,13 +66,19 @@ month_days = {
 
 
 def compare_delivery_duration(delivery_date, product):
-    if 'сегодня' in delivery_date or 'завтра' in delivery_date:
+    min_delivery_duration = product.commission.delivery_duration_from
+    max_delivery_duration = product.commission.delivery_duration_to
+    if 'сегодня' in delivery_date:
         return False
+    elif 'завтра' in delivery_date:
+        if min_delivery_duration <= 2:
+            return True
+        else:
+            return False
     day, month = delivery_date.split(' ')
     month = month_order[month]
     now = datetime.today()
-    min_delivery_duration = product.commission.delivery_duration_from
-    max_delivery_duration = product.commission.delivery_duration_to
+
     print(max_delivery_duration)
     if now.month == month:
         if min_delivery_duration <= now.day - int(day) <= max_delivery_duration:
@@ -141,8 +147,8 @@ async def parse_kaspi(url, product):
                     #     delivery_price = 0
                     # else:
                     #     delivery_price = int(delivery_price)
-                    print(delivery['date'])
                     if compare_delivery_duration(delivery['date'], product):
+                        print('----')
                         offers_output.append(price)
                         break
 
