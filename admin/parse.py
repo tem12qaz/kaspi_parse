@@ -141,7 +141,7 @@ async def parse_kaspi(url, product):
                     #     delivery_price = 0
                     # else:
                     #     delivery_price = int(delivery_price)
-
+                    print(delivery['date'])
                     if compare_delivery_duration(delivery['date'], product):
                         offers_output.append(price)
                         break
