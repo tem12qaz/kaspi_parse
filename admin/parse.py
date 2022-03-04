@@ -78,12 +78,9 @@ def compare_delivery_duration(delivery_date, product):
     day, month = delivery_date.split(' ')
     month = month_order[month]
     now = datetime.today()
-    duration = now.day - int(day)
 
-    print(duration)
-    print(max_delivery_duration)
     if now.month == month:
-        if min_delivery_duration <= duration <= max_delivery_duration:
+        if min_delivery_duration <= int(day) - now.day <= max_delivery_duration:
             return True
         else:
             return False
@@ -150,7 +147,6 @@ async def parse_kaspi(url, product):
                     # else:
                     #     delivery_price = int(delivery_price)
                     if compare_delivery_duration(delivery['date'], product):
-                        print('----')
                         offers_output.append(price)
                         break
 
