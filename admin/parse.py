@@ -208,7 +208,7 @@ async def parse_cycle(loop, db):
             commission = product.commission
             loop.create_task(parse(product, commission, table_dict, db))
 
-        while [task for task in asyncio.all_tasks(loop) if not task.done()]:
+        while len([task for task in asyncio.all_tasks(loop) if not task.done()]) > 1:
             await asyncio.sleep(5)
 
         await asyncio.sleep(300)
