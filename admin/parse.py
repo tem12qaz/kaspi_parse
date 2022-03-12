@@ -66,15 +66,21 @@ month_days = {
 
 
 def compare_delivery_duration(delivery_date, product):
-    if 'сегодня' in delivery_date or 'завтра' in delivery_date:
+    min_delivery_duration = product.commission.delivery_duration_from
+    max_delivery_duration = product.commission.delivery_duration_to
+    if 'сегодня' in delivery_date:
         return False
+    elif 'завтра' in delivery_date:
+        if min_delivery_duration <= 1:
+            return True
+        else:
+            return False
     day, month = delivery_date.split(' ')
     month = month_order[month]
     now = datetime.today()
-    min_delivery_duration = product.commission.delivery_duration_from
-    max_delivery_duration = product.commission.delivery_duration_to
+
     if now.month == month:
-        if min_delivery_duration <= now.day - int(day) <= max_delivery_duration:
+        if min_delivery_duration <= int(day) - now.day <= max_delivery_duration:
             return True
         else:
             return False
@@ -140,7 +146,6 @@ async def parse_kaspi(url, product):
                     #     delivery_price = 0
                     # else:
                     #     delivery_price = int(delivery_price)
-
                     if compare_delivery_duration(delivery['date'], product):
                         offers_output.append(price)
                         break
@@ -203,7 +208,7 @@ async def parse_cycle(loop, db):
             commission = product.commission
             loop.create_task(parse(product, commission, table_dict, db))
 
-        while [task for task in asyncio.all_tasks(loop) if not task.done()]:
+        while len([task for task in asyncio.all_tasks(loop) if not task.done()]) > 1:
             await asyncio.sleep(5)
 
         await asyncio.sleep(300)
