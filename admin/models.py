@@ -24,9 +24,16 @@ class Role(db.Model, RoleMixin):
     description = db.Column(db.String(255))
 
 
-class Proxie(db.Model):
+class Proxy(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
+    user = db.Column(db.String(32))
+    password = db.Column(db.String(32))
+    ip = db.Column(db.String(32))
+    port = db.Column(db.String(32))
+    status = db.Column(db.String(16))
 
+    def __repr__(self):
+        return f'http://{self.user}:{self.password}@{self.ip}:{self.port}/'
 
 
 class Product(db.Model):
@@ -120,9 +127,6 @@ s_price = {self.supplier1_price}
 s_margin = {self.supplier1_margin}
 s_margin_percent = {self.supplier1_margin_percent}
 '''
-
-    def parse_kaspi(self):
-
 
 
 class Commission(db.Model):

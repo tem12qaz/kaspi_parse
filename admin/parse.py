@@ -65,6 +65,18 @@ month_days = {
 }
 
 
+class Parser(object):
+    __instance = None
+
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(Parser, cls).__new__(cls)
+        return cls.__instance
+
+    def parse(self):
+        pass
+
+
 def compare_delivery_duration(delivery_date, product):
     min_delivery_duration = product.commission.delivery_duration_from
     max_delivery_duration = product.commission.delivery_duration_to
@@ -191,8 +203,10 @@ async def parse(product: Product, commission, table_dict, db):
         product.kaspi_price = 0
     else:
         product.kaspi_price = price
-        product.supplier1_price = table_dict[product.supplier1_code][0]
-        product.supplier1_name = table_dict[product.supplier1_code][3]
+        for i in range (1, 11):
+            setattr(product, 'supplier1_name', table_dict[product.supplier1_code][0])
+            setattr(product, 'supplier1_name') = table_dict[product.supplier1_code][0]
+            product.supplier1_name = table_dict[product.supplier1_code][3]
 
         db.session.commit()
         calculate_margin(product, commission)
