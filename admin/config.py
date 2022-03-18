@@ -69,17 +69,17 @@ COOKIES = {
 }
 
 HEADERS = {
-        'Connection': 'keep-alive',
-        'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="99", "Google Chrome";v="99"',
-        'Accept': 'application/vnd.api+json',
-        'sec-ch-ua-mobile': '?0',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36',
-        'sec-ch-ua-platform': '"Windows"',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Dest': 'empty',
-        'Referer': '{url}&ref=rec-goods',
-        'Accept-Language': 'ru-RU,ru;q=0.9,en;q=0.8,es;q=0.7',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0',
+    'Accept': 'application/json, text/*',
+    'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Referer': 'https://kaspi.kz/shop/p/samsung-galaxy-a52-8-256gb-chernyi-101198207/?c=750000000',
+    'Content-Type': 'application/json; charset=utf-8',
+    'Origin': 'https://kaspi.kz',
+    'Connection': 'keep-alive',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-origin',
 }
 
 month_order = {
