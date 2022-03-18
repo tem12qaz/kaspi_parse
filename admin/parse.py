@@ -1,174 +1,138 @@
 import asyncio
+import copy
 import json
+import pprint
+import time
 import traceback
 from datetime import datetime
 from threading import Thread
 
 import requests
-from fake_useragent import UserAgent
 import aiohttp as aiohttp
 import pandas as pd
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 
-from config import delivery_duration, cookies
-from models import Product, Commission
-from test import parse_new
-
-fa = UserAgent()
-
-proxies = {
-    "http": "http://50u3vE:M4QaXL@188.119.79.182:8000/"
-}
-
-month_order = {
-    'января': 1,
-    'февраля': 2,
-    'марта': 3,
-    'апреля': 4,
-    'мая': 5,
-    'июня': 6,
-    'июля': 7,
-    'августа': 8,
-    'сентября': 9,
-    'октября': 10,
-    'ноября': 11,
-    'декабря': 12,
-}
-
-# month_days = {
-#     'января': 31,
-#     'февраля': 28,
-#     'марта': 31,
-#     'апреля': 30,
-#     'мая': 31,
-#     'июня': 30,
-#     'июля': 31,
-#     'августа': 31,
-#     'сентября': 30,
-#     'октября': 31,
-#     'ноября': 30,
-#     'декабря': 31,
-# }
-
-month_days = {
-    1: 31,
-    2: 28,
-    3: 31,
-    4: 30,
-    5: 31,
-    6: 30,
-    7: 31,
-    8: 31,
-    9: 30,
-    10: 31,
-    11: 30,
-    12: 31,
-}
+from config import HEADERS, COOKIES, month_order, month_days
+from models import Product, Commission, Proxy
 
 
 class Parser(object):
-    __instance = None
-
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(Parser, cls).__new__(cls)
-        return cls.__instance
+        return cls.instance
+
+    @staticmethod
+    def get_cookies(proxy: Proxy):
+        cookies_output = {}
+
+        options = Options()
+        # options.headless = True
+        driver = webdriver.Firefox(
+            options=options
+        )
+
+        driver.get('https://kaspi.kz/shop/p/samsung-galaxy-a52-8-256gb-chernyi-101198207/?at=1&c=750000000')
+        time.sleep(2)
+
+        driver.find_element('xpath', '//a[@data-city-id="750000000"]').click()
+        time.sleep(5)
+
+        cookies = driver.get_cookies()
+        for cookie in cookies:
+            cookies_output[cookie['name']] = cookie['value']
+
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(cookies_output)
+
+    @staticmethod
+    def compare_delivery_duration(delivery_date, product):
+        min_delivery_duration = product.commission.delivery_duration_from
+        max_delivery_duration = product.commission.delivery_duration_to
+        if 'сегодня' in delivery_date:
+            return False
+        elif 'завтра' in delivery_date:
+            if min_delivery_duration <= 1:
+                return True
+            else:
+                return False
+        day, month = delivery_date.split(' ')
+        month = month_order[month]
+        now = datetime.today()
+
+        if now.month == month:
+            if min_delivery_duration <= int(day) - now.day <= max_delivery_duration:
+                return True
+            else:
+                return False
+        else:
+            duration = month_days[now.month] - now.day + int(day)
+            if min_delivery_duration <= duration <= max_delivery_duration:
+                return True
+            else:
+                return False
+
+    @staticmethod
+    def format_headers(url):
+        headers = copy.deepcopy(HEADERS)
+        headers['Referer'] = url + '&ref=rec-goods'
+        return headers
+
+    @staticmethod
+    def format_url(url):
+        url1, url2 = url.split('&')[0].split('?')
+        url = url1 + 'offers/?' + url2 + '&limit=100&page=0'
+        return url
+
+    @classmethod
+    async def request_kaspi(cls, url, proxy: Proxy):
+        async with aiohttp.ClientSession(cookies=COOKIES) as session:
+            resp = await session.get(
+                url=f'https://kaspi.kz/shop/p/samsung-galaxy-a52-8-256gb-chernyi-101198207/offers/',
+                headers=cls.format_headers(url),
+                proxy=str(proxy)
+            )
+            data = (await resp.read()).decode('utf-8')
+            return data
+
+    @classmethod
+    async def parse_kaspi(cls, url, product, proxy: Proxy):
+        try:
+            try:
+                data = cls.request_kaspi(url)
+            except:
+                pass
+            offers = json.loads(data)['data']
+            offers_output = []
+            for offer in offers:
+                price = int(offer['priceFormatted'].replace('₸', '').replace(' ', ''))
+                for delivery in offer['deliveryOptions']:
+                    if delivery['type'] == 'DELIVERY':
+                        delivery_price = delivery['price'].replace('₸', '').replace(' ', '')
+                        # if delivery_price == 'бе��платно' or delivery_price == 'бесплатно':
+                        #     delivery_price = 0
+                        # else:
+                        #     delivery_price = int(delivery_price)
+                        if compare_delivery_duration(delivery['date'], product):
+                            offers_output.append(price)
+                            break
+
+            if offers_output:
+                return min(offers_output)
+            else:
+                return False
+        except:
+            print(traceback.format_exc())
+            return False
 
     def parse(self):
         pass
 
 
-def compare_delivery_duration(delivery_date, product):
-    min_delivery_duration = product.commission.delivery_duration_from
-    max_delivery_duration = product.commission.delivery_duration_to
-    if 'сегодня' in delivery_date:
-        return False
-    elif 'завтра' in delivery_date:
-        if min_delivery_duration <= 1:
-            return True
-        else:
-            return False
-    day, month = delivery_date.split(' ')
-    month = month_order[month]
-    now = datetime.today()
-
-    if now.month == month:
-        if min_delivery_duration <= int(day) - now.day <= max_delivery_duration:
-            return True
-        else:
-            return False
-    else:
-        duration = month_days[now.month] - now.day + int(day)
-        if min_delivery_duration <= duration <= max_delivery_duration:
-            return True
-        else:
-            return False
 
 
-def header_format(url_):
-    headers = {
-        'Connection': 'keep-alive',
-        'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="98", "Google Chrome";v="98"',
-        'Accept': 'application/vnd.api+json',
-        'sec-ch-ua-mobile': '?0',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36',
-        'sec-ch-ua-platform': '"Windows"',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Dest': 'empty',
-        'Referer': f'{url_}/?c=750000000&ref=rec-goods&PageSpeed=noscript',
-        'Accept-Language': 'ru-RU,ru;q=0.9,en;q=0.8,es;q=0.7',
-    }
-    return headers
 
-
-async def parse_kaspi(url, product):
-    params = (
-        ('c', '750000000'),
-        ('limit', '100'),
-        ('page', '0'),
-    )
-    try:
-        data = parse_new(url)
-        # url = url.split("/?")[0]
-        # print(url)
-        # response = requests.get(
-        #     f'{url}/offers/', headers=header_format(url), params=params, cookies=cookies, proxies=proxies
-        # )
-        # data = response.content.decode('utf-8')
-        # print(data)
-
-        # async with aiohttp.ClientSession() as session:
-        #     resp = await session.get(
-        #         url=f'{url}/offers/',
-        #         headers=header_format(url),
-        #         params=params,
-        #         proxy=proxies['http']
-        #     )
-        #     data = (await resp.read()).decode('utf-8')
-            # print(data)
-
-        offers = json.loads(data)['data']
-        offers_output = []
-        for offer in offers:
-            price = int(offer['priceFormatted'].replace('₸', '').replace(' ', ''))
-            for delivery in offer['deliveryOptions']:
-                if delivery['type'] == 'DELIVERY':
-                    delivery_price = delivery['price'].replace('₸', '').replace(' ', '')
-                    # if delivery_price == 'бе��платно' or delivery_price == 'бесплатно':
-                    #     delivery_price = 0
-                    # else:
-                    #     delivery_price = int(delivery_price)
-                    if compare_delivery_duration(delivery['date'], product):
-                        offers_output.append(price)
-                        break
-
-        if offers_output:
-            return min(offers_output)
-        else:
-            return False
-    except:
-        print(traceback.format_exc())
-        return False
 
 
 def parse_table():
@@ -204,8 +168,8 @@ async def parse(product: Product, commission, table_dict, db):
     else:
         product.kaspi_price = price
         for i in range (1, 11):
-            setattr(product, 'supplier1_name', table_dict[product.supplier1_code][0])
-            setattr(product, 'supplier1_name') = table_dict[product.supplier1_code][0]
+            # setattr(product, 'supplier1_name', table_dict[product.supplier1_code][0])
+            # setattr(product, 'supplier1_name') = table_dict[product.supplier1_code][0]
             product.supplier1_name = table_dict[product.supplier1_code][3]
 
         db.session.commit()
@@ -232,3 +196,8 @@ def parse_cycle_start(db):
     loop = asyncio.new_event_loop()
     loop.create_task(parse_cycle(loop, db))
     Thread(target=loop.run_forever, args=()).start()
+
+
+p = Parser()
+print(p)
+p.get_cookies(Proxy)

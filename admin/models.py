@@ -30,7 +30,8 @@ class Proxy(db.Model):
     password = db.Column(db.String(32))
     ip = db.Column(db.String(32))
     port = db.Column(db.String(32))
-    status = db.Column(db.String(16))
+    status = db.Column(db.String(16), default='OK')
+    cookies = db.Column(db.Text, default='OK')
 
     def __repr__(self):
         return f'http://{self.user}:{self.password}@{self.ip}:{self.port}/'

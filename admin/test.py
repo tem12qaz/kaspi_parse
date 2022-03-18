@@ -22,7 +22,7 @@ def format_cookies(c):
         '_ym_d': '1646360595',
         '_ym_isad': '2',
         '_fbp': 'fb.1.1646360594905.720965103',
-        'kaspi.storefront.cookie.city': c,
+        'kaspi.storefront.cookie.city': '750000000',
         'ks.cc': '-1',
         '_hjSessionUser_283363': 'eyJpZCI6Ijg5ODdhZDU3LTFjNGEtNTZmNS05MjNiLTU2YTk5ZDZkOTk3ZSIsImNyZWF0ZWQiOjE2NDYzNjA1OTQ1NjEsImV4aXN0aW5nIjp0cnVlfQ==',
         'ks.ngs.s': '09e61e0041fa3f3ef4a84dcc680f7abb',
