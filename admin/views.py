@@ -22,9 +22,17 @@ class HomeAdminView(AdminMixin, AdminIndexView):
 
 class ProductView(AdminMixin, ModelView):
     # column_list = ('id', 'region', 'name', 'kaspi_price', 'kaspi_url', 'supplier1_code', 'supplier1_price', 'supplier1_margin')
-    column_list = ('id', 'commission', 'delivery_duration', 'kaspi_price', 'kaspi_url', 'supplier1_name', 'supplier1_code', 'supplier1_price', 'supplier1_margin', 'supplier1_margin_percent')
+    column_list = ('id', 'commission', 'kaspi_price', 'kaspi_url',
+                   'supplier1', 'supplier2', 'supplier3', 'supplier4',
+                   'supplier5', 'supplier6', 'supplier7', 'supplier8',
+                   'supplier9', 'supplier10', 'best'
+                   )
 
-    form_columns = ('kaspi_url', 'supplier1_code', 'commission')
+    form_columns = ('kaspi_url', 'supplier1_code', 'supplier1_code',
+                    'supplier2_code', 'supplier3_code', 'supplier4_code',
+                    'supplier5_code', 'supplier6_code', 'supplier7_code',
+                    'supplier8_code', 'supplier9_code', 'supplier10_code',
+                    'commission')
 
 
 class CommView(AdminMixin, ModelView):

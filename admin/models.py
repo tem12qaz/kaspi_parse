@@ -1,6 +1,7 @@
 import enum
 
 from flask_security import UserMixin, RoleMixin
+from tabulate import tabulate
 
 from flask_app_init import db
 
@@ -118,6 +119,74 @@ class Product(db.Model):
     best_margin_percent = db.Column(db.Float(), nullable=True)
 
     commission_id = db.Column(db.Integer, db.ForeignKey('commission.id'), nullable=False)
+
+    def best(self):
+        margins = [getattr(self, f'supplier{i}_margin') for i in range(1, 11)]
+        margins_percent = [getattr(self, f'supplier{i}_margin_percent') for i in range(1, 11)]
+
+        best_margin = max(*margins)
+        best_margin_percent = max(*margins_percent)
+        supplier_margin = f'supplier{margins.index(best_margin) + 1}_name'
+        supplier_margin_percent = f'supplier{margins_percent.index(best_margin_percent) + 1}_name'
+
+        table = tabulate(
+            [[supplier_margin, supplier_margin_percent],
+             [best_margin, best_margin_percent]],
+            headers=['margin', 'percent']
+        )
+        return table
+
+    def get_supplier_repr(self, num):
+        name = getattr(self, f'supplier{num}_name')
+        code = getattr(self, f'supplier{num}_code')
+        amount = getattr(self, f'supplier{num}_amount')
+        price = getattr(self, f'supplier{num}_price')
+        margin = getattr(self, f'supplier{num}_margin')
+        margin_percent = getattr(self, f'supplier{num}_margin_percent')
+
+        if not name and not code:
+            return 'null'
+
+        table = tabulate([amount, price, margin, margin_percent], headers=['amount, price, margin, percent'])
+
+        represent = f'<b>{name}</b> {code}<br>{table}'
+        return represent
+
+    @property
+    def supplier1(self):
+        return self.get_supplier_repr(1)
+
+    @property
+    def supplier2(self):
+        return self.get_supplier_repr(2)
+
+    @property
+    def supplier3(self):
+        return self.get_supplier_repr(3)
+
+    @property
+    def supplier4(self):
+        return self.get_supplier_repr(4)
+
+    @property
+    def supplier5(self):
+        return self.get_supplier_repr(5)
+
+    @property
+    def supplier6(self):
+        return self.get_supplier_repr(6)
+
+    @property
+    def supplier7(self):
+        return self.get_supplier_repr(7)
+
+    @property
+    def supplier8(self):
+        return self.get_supplier_repr(8)
+
+    @property
+    def supplier10(self):
+        return self.get_supplier_repr(10)
 
     def __repr__(self):
         return f'''
