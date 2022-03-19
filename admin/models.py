@@ -122,8 +122,8 @@ class Product(db.Model):
 
     @property
     def best(self):
-        margins = [getattr(self, f'supplier{i}_margin') for i in range(1, 11)]
-        margins_percent = [getattr(self, f'supplier{i}_margin_percent') for i in range(1, 11)]
+        margins = [getattr(self, f'supplier{i}_margin') for i in range(1, 11) if not None]
+        margins_percent = [getattr(self, f'supplier{i}_margin_percent') for i in range(1, 11) if not None]
 
         best_margin = max(*margins)
         best_margin_percent = max(*margins_percent)
