@@ -120,6 +120,7 @@ class Product(db.Model):
 
     commission_id = db.Column(db.Integer, db.ForeignKey('commission.id'), nullable=False)
 
+    @property
     def best(self):
         margins = [getattr(self, f'supplier{i}_margin') for i in range(1, 11)]
         margins_percent = [getattr(self, f'supplier{i}_margin_percent') for i in range(1, 11)]
@@ -150,6 +151,7 @@ class Product(db.Model):
         table = tabulate([[amount, price, margin, margin_percent]], headers=['amount, price, margin, percent'])
 
         represent = f'<b>{name}</b> {code}<br>{table}'
+        represent = '{{' + represent + '|safe}}'
         return represent
 
     @property
