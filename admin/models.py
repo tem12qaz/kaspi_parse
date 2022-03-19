@@ -147,7 +147,7 @@ class Product(db.Model):
         if not name and not code:
             return 'null'
 
-        table = tabulate([amount, price, margin, margin_percent], headers=['amount, price, margin, percent'])
+        table = tabulate([[amount, price, margin, margin_percent]], headers=['amount, price, margin, percent'])
 
         represent = f'<b>{name}</b> {code}<br>{table}'
         return represent
