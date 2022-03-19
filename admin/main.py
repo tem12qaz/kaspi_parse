@@ -1,6 +1,7 @@
 from app import app, db
-from parse import parse_cycle_start
+from parse import Parser
 
 if __name__ == '__main__':
-    parse_cycle_start(db)
+    parser = Parser()
+    # parser.start_parse(db)
     app.run()

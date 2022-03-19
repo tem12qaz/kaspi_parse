@@ -222,7 +222,7 @@ class Parser(object):
 
             await asyncio.sleep(300)
 
-    def start_parse(self):
+    def start_parse(self, db):
         loop = asyncio.new_event_loop()
         loop.create_task(self.parse(loop, db))
         Thread(target=loop.run_forever, args=()).start()
