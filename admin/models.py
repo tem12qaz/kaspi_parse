@@ -127,8 +127,8 @@ class Product(db.Model):
         margins_percent = [getattr(self, f'supplier{i}_margin_percent') for i in range(1, 11) if
                            getattr(self, f'supplier{i}_margin_percent') is not None]
 
-        best_margin = max(*margins)
-        best_margin_percent = max(*margins_percent)
+        best_margin = max(margins)
+        best_margin_percent = max(margins_percent)
         supplier_margin = f'supplier{margins.index(best_margin) + 1}_name'
         supplier_margin_percent = f'supplier{margins_percent.index(best_margin_percent) + 1}_name'
 
