@@ -1,6 +1,7 @@
 import enum
 
 from flask_security import UserMixin, RoleMixin
+from jinja2 import Markup
 from tabulate import tabulate
 
 from flask_app_init import db
@@ -152,8 +153,8 @@ class Product(db.Model):
 
         table = tabulate([[amount, price, margin, margin_percent]], headers=['amount, price, margin, percent'])
 
-        represent = f'<b>{name}</b> {code}<br>{table}'
-        represent = '{{' + represent + '|safe}}'
+        represent = Markup(f'<b>{name}</b> {code}<br>{table}')
+        # represent = '{{' + represent + '|safe}}'
         return represent
 
     @property
