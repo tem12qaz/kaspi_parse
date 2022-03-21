@@ -202,7 +202,7 @@ class Parser(object):
             return False
 
     @staticmethod
-    def calculate_margin(product: Product, commission):
+    def calculate_margin(product: Product, commission, db):
         b = product.supplier1_price + commission.delivery_price
         product.supplier1_margin = round(
             product.kaspi_price - (product.kaspi_price * (commission.commission / 100)) - b, 2)
@@ -221,7 +221,7 @@ class Parser(object):
                 setattr(product, f'supplier{i}_price', self.table_dict[product.supplier1_code][0])
 
             db.session.commit()
-            self.calculate_margin(product, commission)
+            self.calculate_margin(product, commission, db)
         db.session.commit()
         print(product)
 
