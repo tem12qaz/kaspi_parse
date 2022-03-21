@@ -41,6 +41,11 @@ class CommView(AdminMixin, ModelView):
     form_columns = tuple()
 
 
+class ProxyView(AdminMixin, ModelView):
+    column_list = ('id', 'user', 'password', 'ip', 'port', 'status')
+    form_columns = ('user', 'password', 'ip', 'port')
+
+
 class LogoutView(AdminMixin, BaseView):
     @expose('/')
     def logout_button(self):
