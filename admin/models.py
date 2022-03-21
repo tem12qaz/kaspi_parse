@@ -156,7 +156,7 @@ class Product(db.Model):
         ).replace('\n', '<br>')
         print(table.replace('<br>', '\n'))
 
-        represent = Markup(f'<div style="width: 300px; white-space: pre"><b>{name}</b> {code}<br>{table}</div>').replace(' ', '&nbsp')
+        represent = Markup(f'<div style="width: 300px; white-space: pre"><b>{name}</b> {code}<br>{table}</div>'.replace(' ', '&nbsp'))
         print(represent)
         # represent = '{{' + represent + '|safe}}'
         return represent
