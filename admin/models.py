@@ -151,8 +151,10 @@ class Product(db.Model):
         if not name and not code:
             return 'null'
 
-        table = tabulate([[amount, price, margin, margin_percent]], headers=['amount', 'price', 'margin', 'percent']).replace('\n', '<br>')
-        print(repr(table))
+        table = tabulate(
+            [[amount, price, margin, margin_percent]], headers=['amount', 'price', 'margin', 'percent']
+        ).replace('\n', '<br>').replace(' ', ' ')
+        # print(repr(table))
 
         represent = Markup(f'<div style="width: 300px"><b>{name}</b> {code}<br>{table}</div>')
         # represent = '{{' + represent + '|safe}}'
