@@ -152,6 +152,7 @@ class Product(db.Model):
             return 'null'
 
         table = tabulate([[amount, price, margin, margin_percent]], headers=['amount', 'price', 'margin', 'percent'])
+        print(table)
 
         represent = Markup(f'<div style="width: 300px"><b>{name}</b> {code}<br>{table}</div>')
         # represent = '{{' + represent + '|safe}}'
