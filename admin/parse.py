@@ -206,21 +206,25 @@ class Parser(object):
 
     async def parse(self, loop, db):
         while True:
-            self.parse_table()
-            products = Product.query.all()
-            proxies = Proxy.query.filter_by(status='OK')
-            i = 0
-            for product in products:
-                commission = product.commission
-                loop.create_task(self.parse_prod(product, commission, db, proxies[i]))
-                i += 1
-                if i == len(proxies):
-                    i = 0
+            try:
+                self.parse_table()
+                products = Product.query.all()
+                proxies = Proxy.query.filter_by(status='OK')
+                i = 0
+                for product in products:
+                    commission = product.commission
+                    loop.create_task(self.parse_prod(product, commission, db, proxies[i]))
+                    i += 1
+                    if i == len(proxies):
+                        i = 0
 
-            while len([task for task in asyncio.all_tasks(loop) if not task.done()]) > 1:
-                await asyncio.sleep(5)
+                while len([task for task in asyncio.all_tasks(loop) if not task.done()]) > 1:
+                    await asyncio.sleep(5)
 
-            await asyncio.sleep(300)
+                await asyncio.sleep(300)
+            except Exception as e:
+                print(traceback.format_exc())
+                await asyncio.sleep(100)
 
     def start_parse(self, db):
         loop = asyncio.new_event_loop()
