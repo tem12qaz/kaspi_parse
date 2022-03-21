@@ -174,7 +174,9 @@ class Product(db.Model):
 
         table = f'<i>amount:</i> <b>{amount}</b><br><i>price:</i> <b>{price}</b><br><i>margin:</i> <b>{margin}</b><br><i>percent:</i> <b>{margin_percent}</b>'
 
-        represent = Markup(f'<div style="max-width: 300px; white-space: pre"><b>{name}</b><br>{code}<br>{table}</div>'.replace(' ', '&nbsp'))
+        represent = Markup(
+            f'<div style="max-width: 300px; white-space: pre"><b>{name}</b><br>{code}<br>{table}</div>'
+                .replace(' ', '&nbsp').replace('<font&nbspcolor="green">', '<font color="green">'))
         return represent
 
     @property
