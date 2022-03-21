@@ -216,9 +216,13 @@ class Parser(object):
         else:
             product.kaspi_price = price
             for i in range(1, 11):
-                setattr(product, f'supplier{i}_name', self.table_dict[product.supplier1_code][3])
-                setattr(product, f'supplier{i}_amount', self.table_dict[product.supplier1_code][1])
-                setattr(product, f'supplier{i}_price', self.table_dict[product.supplier1_code][0])
+                code = getattr(product, f'supplier{i}_code')
+                if not code:
+                    continue
+                row = self.table_dict[code]
+                setattr(product, f'supplier{i}_name', row[3])
+                setattr(product, f'supplier{i}_amount', row[1])
+                setattr(product, f'supplier{i}_price', row[0])
 
             db.session.commit()
             self.calculate_margin(product, commission, db)
