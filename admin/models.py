@@ -153,10 +153,11 @@ class Product(db.Model):
 
         table = tabulate(
             [[amount, price, margin, margin_percent]], headers=['amount', 'price', 'margin', 'percent']
-        ).replace('\n', '<br>').replace(' ', ' ')
+        ).replace('\n', '<br>')
         # print(repr(table))
 
         represent = Markup(f'<div style="width: 300px"><b>{name}</b> {code}<br>{table}</div>')
+        print(represent)
         # represent = '{{' + represent + '|safe}}'
         return represent
 
