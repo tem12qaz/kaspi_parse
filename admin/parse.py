@@ -162,7 +162,10 @@ class Parser(object):
             offers = json.loads(data)['offers']
             offers_output = []
             for offer in offers:
-                price = int(offer['priceFormatted'].replace('₸', '').replace(' ', ''))
+                price = int(float(offer['price'].replace('₸', '').replace(' ', '')))
+                delivery = offer.get('delivery')
+                if delivery:
+                    month, day = delivery.split('T')[0].split('-')[1:]
                 for delivery in offer['deliveryOptions']:
                     if delivery['type'] == 'DELIVERY':
                         delivery_price = delivery['price'].replace('₸', '').replace(' ', '')

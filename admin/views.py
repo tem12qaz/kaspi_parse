@@ -43,7 +43,7 @@ class CommView(AdminMixin, ModelView):
 
 class ProxyView(AdminMixin, ModelView):
     column_list = ('id', 'user', 'password', 'ip', 'port', 'status')
-    form_columns = ('user', 'password', 'ip', 'port')
+    form_columns = ('user', 'password', 'ip', 'port', 'status')
 
 
 class LogoutView(AdminMixin, BaseView):
