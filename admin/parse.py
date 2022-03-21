@@ -153,11 +153,13 @@ class Parser(object):
                 proxy.status = 'WAIT'
                 db.session.commit()
                 await cls.wait_proxy(proxy)
+                return False
             except:
                 proxy.status = 'EXPIRED'
                 db.session.commit()
+                return False
 
-            offers = json.loads(data)['data']
+            offers = json.loads(data)['offers']
             offers_output = []
             for offer in offers:
                 price = int(offer['priceFormatted'].replace('₸', '').replace(' ', ''))
