@@ -163,10 +163,10 @@ class Product(db.Model):
         margin = getattr(self, f'supplier{num}_margin')
         margin_percent = getattr(self, f'supplier{num}_margin_percent')
 
-        if margin and str(margin) == self.best_margin()[0]:
+        if margin and margin == self.best_margin()[0]:
             margin = f'<font color="green">{margin}</font>'
 
-        if margin_percent and str(margin_percent) == self.best_percent()[0]:
+        if margin_percent and margin_percent == self.best_percent()[0]:
             margin_percent = f'<font color="green">{margin_percent}</font>'
 
         if not name and not code:
