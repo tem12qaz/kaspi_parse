@@ -117,6 +117,28 @@ class Product(db.Model):
 
     commission_id = db.Column(db.Integer, db.ForeignKey('commission.id'), nullable=False)
 
+    def best_margin(self):
+        margins = [getattr(self, f'supplier{i}_margin') for i in range(1, 11) if
+                   getattr(self, f'supplier{i}_margin') is not None]
+        if not margins:
+            return 'Null', 'Null'
+        best_margin = max(margins)
+
+        supplier_margin = getattr(self, f'supplier{margins.index(best_margin) + 1}_name')
+
+        return max(margins), supplier_margin
+
+    def best_percent(self):
+        margins_percent = [getattr(self, f'supplier{i}_margin_percent') for i in range(1, 11) if
+                           getattr(self, f'supplier{i}_margin_percent') is not None]
+        if not margins_percent:
+            return 'Null', 'Null'
+        best_margin_percent = max(margins_percent)
+
+        supplier_margin_percent = getattr(self, f'supplier{margins_percent.index(best_margin_percent) + 1}_name')
+
+        return max(margins_percent), supplier_margin_percent
+
     @property
     def best(self):
         margins = [getattr(self, f'supplier{i}_margin') for i in range(1, 11) if
@@ -124,10 +146,8 @@ class Product(db.Model):
         margins_percent = [getattr(self, f'supplier{i}_margin_percent') for i in range(1, 11) if
                            getattr(self, f'supplier{i}_margin_percent') is not None]
 
-        best_margin = max(margins)
-        best_margin_percent = max(margins_percent)
-        supplier_margin = getattr(self, f'supplier{margins.index(best_margin) + 1}_name')
-        supplier_margin_percent = getattr(self, f'supplier{margins_percent.index(best_margin_percent) + 1}_name')
+        best_margin, supplier_margin = self.best_margin()
+        best_margin_percent, supplier_margin_percent = self.best_percent()
 
         table = f'best_margin {best_margin} <b>{supplier_margin}</b><br>best_margin_percent {best_margin_percent} <b>{supplier_margin_percent}</b>'
 
@@ -142,6 +162,12 @@ class Product(db.Model):
         price = getattr(self, f'supplier{num}_price')
         margin = getattr(self, f'supplier{num}_margin')
         margin_percent = getattr(self, f'supplier{num}_margin_percent')
+
+        if margin and str(margin) == self.best_margin()[0]:
+            margin = f'<font color="green">{margin}</font>'
+
+        if margin_percent and str(margin_percent) == self.best_percent()[0]:
+            margin_percent = f'<font color="green">{margin_percent}</font>'
 
         if not name and not code:
             return 'null'
