@@ -187,7 +187,7 @@ class Parser(object):
                 delivery = offer.get('delivery')
                 if delivery:
                     delivery = delivery.split('.')[0]
-                    date = datetime.strptime(delivery, '%y-%m-%dT&H:%M:%S')
+                    date = datetime.strptime(delivery, '%y-%m-%dT%H:%M:%S')
                     date = date + timedelta(hours=6)
                     if cls.compare_delivery_duration_datetime(date, product):
                         offers_output.append(price)
