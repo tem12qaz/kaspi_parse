@@ -4,7 +4,8 @@ import json
 import pprint
 import time
 import traceback
-from datetime import datetime
+import pytz
+from datetime import datetime, timedelta
 from threading import Thread
 
 import requests
@@ -72,6 +73,25 @@ class Parser(object):
         self.table_dict = table_dict
 
     @staticmethod
+    def compare_delivery_duration_datetime(date, product):
+        min_delivery_duration = product.commission.delivery_duration_from
+        max_delivery_duration = product.commission.delivery_duration_to
+        tz = pytz.timezone('Asia/Almaty')
+        now = datetime.now(tz)
+
+        if now.month == date.month:
+            if min_delivery_duration <= int(date.day) - now.day <= max_delivery_duration:
+                return True
+            else:
+                return False
+        else:
+            duration = month_days[now.month] - now.day + int(date.day)
+            if min_delivery_duration <= duration <= max_delivery_duration:
+                return True
+            else:
+                return False
+
+    @staticmethod
     def compare_delivery_duration(delivery_date, product):
         min_delivery_duration = product.commission.delivery_duration_from
         max_delivery_duration = product.commission.delivery_duration_to
@@ -84,7 +104,8 @@ class Parser(object):
                 return False
         day, month = delivery_date.split(' ')
         month = month_order[month]
-        now = datetime.today()
+        tz = pytz.timezone('Asia/Almaty')
+        now = datetime.now(tz)
 
         if now.month == month:
             if min_delivery_duration <= int(day) - now.day <= max_delivery_duration:
@@ -165,7 +186,9 @@ class Parser(object):
                 price = int(float(offer['price'].replace('₸', '').replace(' ', '')))
                 delivery = offer.get('delivery')
                 if delivery:
-                    month, day = delivery.split('T')[0].split('-')[1:]
+                    delivery = delivery.split('.')[0]
+                    date = datetime.strptime(delivery, '%y-%m-%dT&H:%M:%S')
+                    date = date + timedelta(hours=6)
                 for delivery in offer['deliveryOptions']:
                     if delivery['type'] == 'DELIVERY':
                         delivery_price = delivery['price'].replace('₸', '').replace(' ', '')
@@ -173,7 +196,7 @@ class Parser(object):
                         #     delivery_price = 0
                         # else:
                         #     delivery_price = int(delivery_price)
-                        if cls.compare_delivery_duration(delivery['date'], product):
+                        if cls.compare_delivery_duration_datetime(delivery['date'], product):
                             offers_output.append(price)
                             break
 
