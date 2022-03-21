@@ -130,15 +130,14 @@ class Product(db.Model):
 
         best_margin = max(margins)
         best_margin_percent = max(margins_percent)
-        supplier_margin = f'supplier{margins.index(best_margin) + 1}_name'
-        supplier_margin_percent = f'supplier{margins_percent.index(best_margin_percent) + 1}_name'
+        supplier_margin = getattr(self, f'supplier{margins.index(best_margin) + 1}_name')
+        supplier_margin_percent = getattr(self, f'supplier{margins_percent.index(best_margin_percent) + 1}_name')
 
-        table = tabulate(
-            [[supplier_margin, supplier_margin_percent],
-             [best_margin, best_margin_percent]],
-            headers=['margin', 'percent']
-        )
-        return table
+        table = f'best_margin {best_margin} <b>{supplier_margin}</b><br>best_margin_percent {best_margin_percent} <b>{supplier_margin_percent}</b>'
+
+        represent = Markup(
+            f'<div style="max-width: 300px; white-space: pre">{table}</div>'.replace(' ', '&nbsp'))
+        return represent
 
     def get_supplier_repr(self, num):
         name = getattr(self, f'supplier{num}_name')
@@ -151,14 +150,9 @@ class Product(db.Model):
         if not name and not code:
             return 'null'
 
-        table = tabulate(
-            [[amount, price, margin, margin_percent]], headers=['amount', 'price', 'margin', 'percent']
-        ).replace('\n', '<br>').replace('-', '_')
-        print(table.replace('<br>', '\n'))
+        table = f'amount {amount}<br>price {price}<br>margin {margin}<br>percent {margin_percent}'
 
-        represent = Markup(f'<div style="width: 300px; white-space: pre"><b>{name}</b> {code}<br>{table}</div>'.replace(' ', '&nbsp'))
-        print(represent)
-        # represent = '{{' + represent + '|safe}}'
+        represent = Markup(f'<div style="max-width: 300px; white-space: pre"><b>{name}</b> {code}<br>{table}</div>'.replace(' ', '&nbsp'))
         return represent
 
     @property
