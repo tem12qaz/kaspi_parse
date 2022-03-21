@@ -115,10 +115,6 @@ class Product(db.Model):
     supplier10_margin = db.Column(db.Float(), nullable=True)
     supplier10_margin_percent = db.Column(db.Float(), nullable=True)
 
-    best_name = db.Column(db.String(128), nullable=True)
-    best_margin = db.Column(db.Float(), nullable=True)
-    best_margin_percent = db.Column(db.Float(), nullable=True)
-
     commission_id = db.Column(db.Integer, db.ForeignKey('commission.id'), nullable=False)
 
     @property
@@ -150,7 +146,7 @@ class Product(db.Model):
         if not name and not code:
             return 'null'
 
-        table = f'amount {amount}<br>price {price}<br>margin {margin}<br>percent {margin_percent}'
+        table = f'<i>amount:</i> {amount}<br><i>price:</i> {price}<br><i>margin:</i> {margin}<br><i>percent:</i> {margin_percent}'
 
         represent = Markup(f'<div style="max-width: 300px; white-space: pre"><b>{name}</b> {code}<br>{table}</div>'.replace(' ', '&nbsp'))
         return represent
