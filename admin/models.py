@@ -153,7 +153,7 @@ class Product(db.Model):
 
         table = tabulate([[amount, price, margin, margin_percent]], headers=['amount, price, margin, percent'])
 
-        represent = Markup(f'<b>{name}</b> {code}<br>{table}')
+        represent = Markup(f'<div style="width: 300px"><b>{name}</b> {code}<br>{table}</div>')
         # represent = '{{' + represent + '|safe}}'
         return represent
 
@@ -188,6 +188,10 @@ class Product(db.Model):
     @property
     def supplier8(self):
         return self.get_supplier_repr(8)
+
+    @property
+    def supplier9(self):
+        return self.get_supplier_repr(9)
 
     @property
     def supplier10(self):
