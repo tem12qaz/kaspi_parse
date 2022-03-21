@@ -209,7 +209,7 @@ class Parser(object):
             try:
                 self.parse_table()
                 products = Product.query.all()
-                proxies = Proxy.query.filter_by(status='OK')
+                proxies = Proxy.query.filter_by(status='OK').all()
                 i = 0
                 for product in products:
                     commission = product.commission
