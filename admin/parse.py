@@ -148,7 +148,7 @@ class Parser(object):
     async def parse_kaspi(cls, url, product, proxy: Proxy):
         try:
             try:
-                data = cls.request_kaspi(url, proxy)
+                data = await cls.request_kaspi(url, proxy)
             except ImportError:
                 proxy.status = 'WAIT'
                 db.session.commit()
