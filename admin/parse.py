@@ -183,22 +183,15 @@ class Parser(object):
             offers = json.loads(data)['offers']
             offers_output = []
             for offer in offers:
-                price = int(float(offer['price'].replace('₸', '').replace(' ', '')))
+                price = int(offer['price'])
                 delivery = offer.get('delivery')
                 if delivery:
                     delivery = delivery.split('.')[0]
                     date = datetime.strptime(delivery, '%y-%m-%dT&H:%M:%S')
                     date = date + timedelta(hours=6)
-                for delivery in offer['deliveryOptions']:
-                    if delivery['type'] == 'DELIVERY':
-                        delivery_price = delivery['price'].replace('₸', '').replace(' ', '')
-                        # if delivery_price == 'бе��платно' or delivery_price == 'бесплатно':
-                        #     delivery_price = 0
-                        # else:
-                        #     delivery_price = int(delivery_price)
-                        if cls.compare_delivery_duration_datetime(delivery['date'], product):
-                            offers_output.append(price)
-                            break
+                    if cls.compare_delivery_duration_datetime(date, product):
+                        offers_output.append(price)
+                        break
 
             if offers_output:
                 return min(offers_output)
