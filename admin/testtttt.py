@@ -3,7 +3,8 @@ import asyncio
 from parse import Parser
 
 
-url = 'https://kaspi.kz/shop/p/xiaomi-dreame-d9-belyi-100987780/?c=750000000'
+url = 'https://kaspi.kz/shop/p/xiaomi-dreame-d9-belyi-100987780/?c=750000000	'
+print(repr(url))
 
 proxies = [
     "http://aLDL3a:1fdrsP@31.134.10.116:8000/",
