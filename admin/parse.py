@@ -4,7 +4,8 @@ import json
 import pprint
 import time
 import traceback
-from datetime import datetime
+import pytz
+from datetime import datetime, timedelta
 from threading import Thread
 
 import requests
@@ -72,6 +73,25 @@ class Parser(object):
         self.table_dict = table_dict
 
     @staticmethod
+    def compare_delivery_duration_datetime(date, product):
+        min_delivery_duration = product.commission.delivery_duration_from
+        max_delivery_duration = product.commission.delivery_duration_to
+        tz = pytz.timezone('Asia/Almaty')
+        now = datetime.now(tz)
+
+        if now.month == date.month:
+            if min_delivery_duration <= int(date.day) - now.day <= max_delivery_duration:
+                return True
+            else:
+                return False
+        else:
+            duration = month_days[now.month] - now.day + int(date.day)
+            if min_delivery_duration <= duration <= max_delivery_duration:
+                return True
+            else:
+                return False
+
+    @staticmethod
     def compare_delivery_duration(delivery_date, product):
         min_delivery_duration = product.commission.delivery_duration_from
         max_delivery_duration = product.commission.delivery_duration_to
@@ -84,7 +104,8 @@ class Parser(object):
                 return False
         day, month = delivery_date.split(' ')
         month = month_order[month]
-        now = datetime.today()
+        tz = pytz.timezone('Asia/Almaty')
+        now = datetime.now(tz)
 
         if now.month == month:
             if min_delivery_duration <= int(day) - now.day <= max_delivery_duration:
@@ -148,29 +169,29 @@ class Parser(object):
     async def parse_kaspi(cls, url, product, proxy: Proxy):
         try:
             try:
-                data = cls.request_kaspi(url, proxy)
+                data = await cls.request_kaspi(url, proxy)
             except ImportError:
                 proxy.status = 'WAIT'
                 db.session.commit()
                 await cls.wait_proxy(proxy)
+                return False
             except:
                 proxy.status = 'EXPIRED'
                 db.session.commit()
+                return False
 
-            offers = json.loads(data)['data']
+            offers = json.loads(data)['offers']
             offers_output = []
             for offer in offers:
-                price = int(offer['priceFormatted'].replace('₸', '').replace(' ', ''))
-                for delivery in offer['deliveryOptions']:
-                    if delivery['type'] == 'DELIVERY':
-                        delivery_price = delivery['price'].replace('₸', '').replace(' ', '')
-                        # if delivery_price == 'бе��платно' or delivery_price == 'бесплатно':
-                        #     delivery_price = 0
-                        # else:
-                        #     delivery_price = int(delivery_price)
-                        if cls.compare_delivery_duration(delivery['date'], product):
-                            offers_output.append(price)
-                            break
+                price = int(offer['price'])
+                delivery = offer.get('delivery')
+                if delivery:
+                    delivery = delivery.split('.')[0]
+                    date = datetime.strptime(delivery, '%Y-%m-%dT%H:%M:%S')
+                    date = date + timedelta(hours=6)
+                    if cls.compare_delivery_duration_datetime(date, product):
+                        offers_output.append(price)
+                        break
 
             if offers_output:
                 return min(offers_output)
@@ -181,7 +202,7 @@ class Parser(object):
             return False
 
     @staticmethod
-    def calculate_margin(product: Product, commission):
+    def calculate_margin(product: Product, commission, db):
         b = product.supplier1_price + commission.delivery_price
         product.supplier1_margin = round(
             product.kaspi_price - (product.kaspi_price * (commission.commission / 100)) - b, 2)
@@ -195,32 +216,40 @@ class Parser(object):
         else:
             product.kaspi_price = price
             for i in range(1, 11):
-                setattr(product, f'supplier{i}_name', self.table_dict[product.supplier1_code][3])
-                setattr(product, f'supplier{i}_amount', self.table_dict[product.supplier1_code][1])
-                setattr(product, f'supplier{i}_price', self.table_dict[product.supplier1_code][0])
+                code = getattr(product, f'supplier{i}_code')
+                if not code:
+                    continue
+                row = self.table_dict[code]
+                setattr(product, f'supplier{i}_name', row[3])
+                setattr(product, f'supplier{i}_amount', row[1])
+                setattr(product, f'supplier{i}_price', row[0])
 
             db.session.commit()
-            self.calculate_margin(product, commission)
+            self.calculate_margin(product, commission, db)
         db.session.commit()
         print(product)
 
     async def parse(self, loop, db):
         while True:
-            self.parse_table()
-            products = Product.query.all()
-            proxies = Proxy.query.filter_by(status='OK')
-            i = 0
-            for product in products:
-                commission = product.commission
-                loop.create_task(self.parse_prod(product, commission, db, proxies[i]))
-                i += 1
-                if i == len(proxies):
-                    i = 0
+            try:
+                self.parse_table()
+                products = Product.query.all()
+                proxies = Proxy.query.filter_by(status='OK').all()
+                i = 0
+                for product in products:
+                    commission = product.commission
+                    loop.create_task(self.parse_prod(product, commission, db, proxies[i]))
+                    i += 1
+                    if i == len(proxies):
+                        i = 0
 
-            while len([task for task in asyncio.all_tasks(loop) if not task.done()]) > 1:
-                await asyncio.sleep(5)
+                while len([task for task in asyncio.all_tasks(loop) if not task.done()]) > 1:
+                    await asyncio.sleep(5)
 
-            await asyncio.sleep(300)
+                await asyncio.sleep(300)
+            except Exception as e:
+                print(traceback.format_exc())
+                await asyncio.sleep(100)
 
     def start_parse(self, db):
         loop = asyncio.new_event_loop()
