@@ -202,11 +202,13 @@ class Parser(object):
             return False
 
     @staticmethod
-    def calculate_margin(product: Product, commission, db):
-        b = product.supplier1_price + commission.delivery_price
-        product.supplier1_margin = round(
-            product.kaspi_price - (product.kaspi_price * (commission.commission / 100)) - b, 2)
-        product.supplier1_margin_percent = round(product.supplier1_margin / product.kaspi_price, 4) * 100
+    def calculate_margin(product: Product, commission, db, i):
+
+        b = getattr(product, f'supplier{i}_price') + commission.delivery_price
+        setattr(product, f'supplier{i}_margin', round(
+            product.kaspi_price - (product.kaspi_price * (commission.commission / 100)) - b, 2))
+
+        setattr(product, f'supplier{i}_margin_percent', round(getattr(product, f'supplier{i}_margin') / product.kaspi_price, 4) * 100)
         db.session.commit()
 
     async def parse_prod(self, product: Product, commission, db, proxy: Proxy):
@@ -225,8 +227,9 @@ class Parser(object):
                 setattr(product, f'supplier{i}_amount', row[1])
                 setattr(product, f'supplier{i}_price', row[0])
 
-            db.session.commit()
-            self.calculate_margin(product, commission, db)
+                db.session.commit()
+                self.calculate_margin(product, commission, db, i)
+
         db.session.commit()
         print(product)
 
