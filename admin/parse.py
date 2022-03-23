@@ -129,7 +129,7 @@ class Parser(object):
             return data
 
     @classmethod
-    async def request_kaspi(cls, url, proxy: Proxy):
+    async def request_kaspi(cls, url, proxy):
         city, prod = cls.get_city_and_prod(url)
         data = f'"cityId":"{city}","id":"{prod}","limit":64,"page":0,"sort":true'
         data = '{' + data + '}'
