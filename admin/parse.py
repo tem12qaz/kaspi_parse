@@ -28,6 +28,7 @@ class Parser(object):
         if not hasattr(cls, 'instance'):
             cls.instance = super(Parser, cls).__new__(cls)
             cls.instance.table_dict = None
+            cls.instance.proxies = None
         return cls.instance
 
     @staticmethod
@@ -175,7 +176,7 @@ class Parser(object):
                 db.session.commit()
                 await cls.wait_proxy(proxy)
                 return False
-            except:
+            except ZeroDivisionError:
                 proxy.status = 'EXPIRED'
                 db.session.commit()
                 return False
@@ -212,6 +213,7 @@ class Parser(object):
         db.session.commit()
 
     async def parse_prod(self, product: Product, commission, db, proxy: Proxy):
+        self.proxies.pop(proxy)
         url = product.kaspi_url.replace('\t', '')
         price = await self.parse_kaspi(url, product, proxy)
         if not price:
@@ -232,6 +234,7 @@ class Parser(object):
 
         db.session.commit()
         print(product)
+        self.proxies.insert(0, proxy)
 
     async def parse(self, loop, db):
         while True:
@@ -239,13 +242,11 @@ class Parser(object):
                 self.parse_table()
                 products = Product.query.all()
                 proxies = Proxy.query.filter_by(status='OK').all()
+                self.proxies = proxies
                 i = 0
                 for product in products:
                     commission = product.commission
-                    loop.create_task(self.parse_prod(product, commission, db, proxies[i]))
-                    i += 1
-                    if i == len(proxies):
-                        i = 0
+                    loop.create_task(self.parse_prod(product, commission, db, self.proxies[-1]))
 
                 while len([task for task in asyncio.all_tasks(loop) if not task.done()]) > 1:
                     await asyncio.sleep(5)
