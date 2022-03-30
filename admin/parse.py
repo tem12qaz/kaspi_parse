@@ -214,7 +214,7 @@ class Parser(object):
         db.session.commit()
 
     async def parse_prod(self, product: Product, commission, db, proxy: Proxy):
-        self.proxies.pop(proxy)
+        self.proxies.remove(proxy)
         url = product.kaspi_url.replace('\t', '')
         price = await self.parse_kaspi(url, product, proxy)
         if not price:
