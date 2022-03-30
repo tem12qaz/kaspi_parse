@@ -24,6 +24,7 @@ fa = UserAgent()
 
 
 class Parser(object):
+    loop = None
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(Parser, cls).__new__(cls)
@@ -175,7 +176,7 @@ class Parser(object):
                 print('proxy_err: ', e)
                 proxy.status = 'WAIT'
                 db.session.commit()
-                await cls.wait_proxy(proxy)
+                Parser.loop.create_task(cls.wait_proxy(proxy))
                 return False
             # except ZeroDivisionError:
             #     proxy.status = 'EXPIRED'
@@ -259,6 +260,7 @@ class Parser(object):
 
     def start_parse(self, db):
         loop = asyncio.new_event_loop()
+        Parser.loop = loop
         loop.create_task(self.parse(loop, db))
         Thread(target=loop.run_forever, args=()).start()
 
