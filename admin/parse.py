@@ -171,15 +171,16 @@ class Parser(object):
         try:
             try:
                 data = await cls.request_kaspi(url, proxy)
-            except ImportError:
+            except Exception as e:
+                print('proxy_err: ', e)
                 proxy.status = 'WAIT'
                 db.session.commit()
                 await cls.wait_proxy(proxy)
                 return False
-            except ZeroDivisionError:
-                proxy.status = 'EXPIRED'
-                db.session.commit()
-                return False
+            # except ZeroDivisionError:
+            #     proxy.status = 'EXPIRED'
+            #     db.session.commit()
+            #     return False
 
             offers = json.loads(data)['offers']
             offers_output = []
