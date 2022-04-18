@@ -178,7 +178,7 @@ class Parser(object):
                 proxy.status = 'WAIT'
                 db.session.commit()
 
-                Parser.loop.create_task(self.wait_proxy(proxy))
+                Parser.loop.create_task(self.wait_proxy(proxy, db))
                 self.products.append(product)
                 return False
             # except ZeroDivisionError:
@@ -245,7 +245,7 @@ class Parser(object):
 
         db.session.commit()
         print(product)
-        self.proxies.insert(0, proxy)
+        self.proxies.append(proxy)
 
     async def parse(self, loop, db):
         while True:
@@ -257,7 +257,7 @@ class Parser(object):
                 self.products = products
                 self.errors = {}
 
-                while self.products:
+                while self.products and len([task for task in asyncio.all_tasks(loop) if not task.done()]) > 1:
                     product = self.products[0]
                     print(product)
                     self.products.remove(product)
@@ -273,7 +273,6 @@ class Parser(object):
                             await asyncio.sleep(2)
                         else:
                             break
-                while len([task for task in asyncio.all_tasks(loop) if not task.done()]) > 1:
                     await asyncio.sleep(5)
 
                 await asyncio.sleep(300)
@@ -287,7 +286,7 @@ class Parser(object):
         loop.create_task(self.parse(loop, db))
         Thread(target=loop.run_forever, args=()).start()
 
-    async def wait_proxy(self, proxy: Proxy):
+    async def wait_proxy(self, proxy: Proxy, db):
         await asyncio.sleep(30)
         proxy.status = 'OK'
         db.session.commit()
