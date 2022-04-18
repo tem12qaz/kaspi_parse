@@ -18,7 +18,7 @@ migrate = Migrate(app, db, directory=MIGRATION_DIR)
 from models import User, Role, Product, Commission, Proxy
 from views import HomeAdminView, ProductView, LogoutView, CommView, ProxyView
 
-admin = Admin(app, 'KaspiParse', url='/admin', index_view=HomeAdminView())
+admin = Admin(app, 'KaspiParse', url='/kaspi', index_view=HomeAdminView())
 admin.add_view(ProductView(Product, db.session))
 admin.add_view(CommView(Commission, db.session))
 admin.add_view(ProxyView(Proxy, db.session))
