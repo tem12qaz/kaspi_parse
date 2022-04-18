@@ -257,7 +257,11 @@ class Parser(object):
                 self.products = products
                 self.errors = {}
 
-                while self.products and len([task for task in asyncio.all_tasks(loop) if not task.done()]) > 1:
+                i = 0
+
+                while self.products and len([task for task in asyncio.all_tasks(loop) if not task.done()]) > i:
+                    if i == 0:
+                        i = 1
                     product = self.products[0]
                     print(product)
                     self.products.remove(product)
