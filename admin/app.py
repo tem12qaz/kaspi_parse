@@ -6,12 +6,13 @@ from flask_admin import Admin
 from flask_security import SQLAlchemyUserDatastore
 from flask_security import Security
 
+from middewares import PrefixMiddleware
 from flask_app_init import app, db
 
 MIGRATION_DIR = os.path.join('admin', 'migrations')
 
 migrate = Migrate(app, db, directory=MIGRATION_DIR)
-app.config["APPLICATION_ROOT"] = "/kaspi"
+app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix='/kaspi')
 #manager = Manager(app)
 
 
