@@ -169,7 +169,7 @@ class Parser(object):
             return offers
 
     # @classmethod
-    async def parse_kaspi(self, url, product, proxy: Proxy):
+    async def parse_kaspi(self, url, product, proxy: Proxy, db):
         try:
             try:
                 offers = await self.request_kaspi(url, proxy)
@@ -221,7 +221,7 @@ class Parser(object):
     async def parse_prod(self, product: Product, commission, db, proxy: Proxy):
         self.proxies.remove(proxy)
         url = product.kaspi_url.replace('\t', '')
-        price = await self.parse_kaspi(url, product, proxy)
+        price = await self.parse_kaspi(url, product, proxy, db)
         await asyncio.sleep(0.3)
         if not price:
             if self.errors.get(product):
