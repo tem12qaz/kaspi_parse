@@ -16,8 +16,8 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from sqlalchemy.testing import db
 
-from config import HEADERS, COOKIES, month_order, month_days
-from models import Product, Commission, Proxy
+from config import HEADERS, COOKIES, month_order, month_days, ERRS_MAX
+from models import Product, Proxy
 
 
 fa = UserAgent()
@@ -164,26 +164,28 @@ class Parser(object):
                 proxy=str(proxy)
             )
             data = (await resp.read()).decode('utf-8')
+            offers = json.loads(data)['offers']
             print(data)
-            return data
+            return offers
 
-    @classmethod
-    async def parse_kaspi(cls, url, product, proxy: Proxy):
+    # @classmethod
+    async def parse_kaspi(self, url, product, proxy: Proxy):
         try:
             try:
-                data = await cls.request_kaspi(url, proxy)
+                offers = await self.request_kaspi(url, proxy)
             except Exception as e:
                 print('proxy_err: ', e)
                 proxy.status = 'WAIT'
                 db.session.commit()
-                Parser.loop.create_task(cls.wait_proxy(proxy))
+
+                Parser.loop.create_task(self.wait_proxy(proxy))
+                self.products.append(product)
                 return False
             # except ZeroDivisionError:
             #     proxy.status = 'EXPIRED'
             #     db.session.commit()
             #     return False
 
-            offers = json.loads(data)['offers']
             offers_output = []
             for offer in offers:
                 price = int(offer['price'])
@@ -192,15 +194,17 @@ class Parser(object):
                     delivery = delivery.split('.')[0]
                     date = datetime.strptime(delivery, '%Y-%m-%dT%H:%M:%S')
                     date = date + timedelta(hours=6)
-                    if cls.compare_delivery_duration_datetime(date, product):
+                    if self.compare_delivery_duration_datetime(date, product):
                         offers_output.append(price)
                         break
 
             if offers_output:
                 return min(offers_output)
             else:
+                self.products.append(product)
                 return False
         except:
+            self.products.append(product)
             print(traceback.format_exc())
             return False
 
@@ -218,7 +222,12 @@ class Parser(object):
         self.proxies.remove(proxy)
         url = product.kaspi_url.replace('\t', '')
         price = await self.parse_kaspi(url, product, proxy)
+        await asyncio.sleep(0.3)
         if not price:
+            if self.errors.get(product):
+                self.errors[product] += 1
+            else:
+                self.errors[product] = 1
             product.kaspi_price = 0
         else:
             product.kaspi_price = price
@@ -245,11 +254,24 @@ class Parser(object):
                 products = Product.query.all()
                 proxies = Proxy.query.filter_by(status='OK').all()
                 self.proxies = proxies
-                i = 0
-                for product in products:
-                    commission = product.commission
-                    loop.create_task(self.parse_prod(product, commission, db, self.proxies[-1]))
+                self.products = products
+                self.errors = {}
 
+                while self.products:
+                    product = self.products[0]
+                    self.products.remove(product)
+                    if self.errors.get(product):
+                        if self.errors.get(product) > ERRS_MAX:
+                            continue
+
+                    commission = product.commission
+                    while True:
+                        try:
+                            loop.create_task(self.parse_prod(product, commission, db, self.proxies[-1]))
+                        except IndexError:
+                            await asyncio.sleep(2)
+                        else:
+                            break
                 while len([task for task in asyncio.all_tasks(loop) if not task.done()]) > 1:
                     await asyncio.sleep(5)
 
@@ -264,8 +286,8 @@ class Parser(object):
         loop.create_task(self.parse(loop, db))
         Thread(target=loop.run_forever, args=()).start()
 
-    @staticmethod
-    async def wait_proxy(proxy: Proxy):
-        await asyncio.sleep(20)
+    async def wait_proxy(self, proxy: Proxy):
+        await asyncio.sleep(30)
         proxy.status = 'OK'
         db.session.commit()
+        self.proxies.append(proxy)
