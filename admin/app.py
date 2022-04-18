@@ -11,7 +11,7 @@ from flask_app_init import app, db
 MIGRATION_DIR = os.path.join('admin', 'migrations')
 
 migrate = Migrate(app, db, directory=MIGRATION_DIR)
-app.config["APPLICATION_ROOT"] = "kaspi"
+app.config["APPLICATION_ROOT"] = "/kaspi"
 #manager = Manager(app)
 
 
