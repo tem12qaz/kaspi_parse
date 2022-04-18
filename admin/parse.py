@@ -259,6 +259,7 @@ class Parser(object):
 
                 while self.products:
                     product = self.products[0]
+                    print(product)
                     self.products.remove(product)
                     if self.errors.get(product):
                         if self.errors.get(product) > ERRS_MAX:

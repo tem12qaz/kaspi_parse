@@ -1,6 +1,6 @@
-import datetime
-import pytz
+e = [1]
 
 
-tz = pytz.timezone('Asia/Almaty')
-print(datetime.datetime.now(tz))
+while e:
+    e.remove(1)
+    print('x')
