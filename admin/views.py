@@ -15,7 +15,7 @@ class AdminMixin:
 
 
 class HomeAdminView(AdminMixin, AdminIndexView):
-    @expose('/kaspi')
+    @expose('/')
     def index(self):
         return self.render('admin_home.html')
 
@@ -47,6 +47,6 @@ class ProxyView(AdminMixin, ModelView):
 
 
 class LogoutView(AdminMixin, BaseView):
-    @expose('/kaspi')
+    @expose('/')
     def logout_button(self):
         return redirect(url_for('security.logout', next='/admin'))
